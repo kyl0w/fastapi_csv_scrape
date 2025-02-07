@@ -13,6 +13,9 @@ install:
 	pip install -r requirements.txt
 	@echo "Dependências instaladas."
 
+freeze:
+	pip freeze > requirements.txt
+
 run:
 	uvicorn $(PACKAGE_NAME).api:app --reload
 	@echo "Servidor FastAPI rodando com Uvicorn..."
