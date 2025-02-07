@@ -168,4 +168,8 @@ cython_debug/
 #.idea/
 
 # PyPI configuration file
+<<<<<<< HEAD
 .pypirc
+=======
+.pypirc
+>>>>>>> 453c81af2f03d4797cb827c1e43a84defbe24fac
