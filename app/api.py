@@ -1,5 +1,4 @@
 from fastapi import FastAPI, status, HTTPException, Depends
-from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse
 from .schemas import UserOut, UserAuth, TokenSchema, SystemUser, LoginSchema
 from .utils import (
@@ -14,6 +13,8 @@ from sqlalchemy.orm import Session
 from .models import User
 from .database import init_db
 from .deps import get_db
+from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, status
+from .scrape import process_csv
 
 init_db()
 
@@ -64,3 +65,39 @@ async def login(data: LoginSchema, db: Session = Depends(get_db)):
 @app.get('/me', summary='Get details of currently logged in user', response_model=UserOut)
 async def get_me(user: SystemUser = Depends(get_current_user)):
     return user
+
+# Scrape
+
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...), current_user: str = Depends(get_current_user)):
+    # Lê o conteúdo do arquivo CSV
+    contents = await file.read()
+    # Converte o conteúdo em bytes para uma string
+    file_content = contents.decode("utf-8").splitlines()
+    
+    # Processa o CSV e faz o scraping
+    results = process_csv(file_content)
+    
+    return {"user": current_user, "results": results}
+
+@app.get("/status/{task_id}")
+async def get_status(task_id: str):
+    task = tasks_status.get(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    if task["status"] == "In Progress" and scrape_urls.AsyncResult(task_id).ready():
+        # Atualiza o status quando a tarefa estiver concluída
+        task["status"] = "Completed"
+        task["result"] = scrape_urls.AsyncResult(task_id).result
+    
+    return task
+
+
+@app.get("/results/{task_id}")
+async def get_results(task_id: str):
+    task = tasks_status.get(task_id)
+    if not task or task["status"] != "Completed":
+        raise HTTPException(status_code=404, detail="Task not completed yet or task not found")
+    
+    return task["result"]

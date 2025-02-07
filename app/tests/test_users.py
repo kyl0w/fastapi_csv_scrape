@@ -36,3 +36,5 @@ def test_login():
     json_response = response.json()
     assert "access_token" in json_response
     assert "refresh_token" in json_response
+    
+# TODO test /me
