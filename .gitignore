@@ -1,0 +1,47 @@
+# Python
+__pycache__
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+.env
+.venv
+venv
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*~
+
+# Coverage reports
+.coverage
+coverage.xml
+*.coveragerc
+htmlcov/
+
+# Testing caches
+.pytest_cache/
+nosetests.xml
+test.db
+
+# Distribution / packaging
+dist/
+build/
+site/
+*.egg-info/
+
+# Pipenv
+Pipfile.lock
+
+# MacOS
+.DS_Store
+
+# Misc
+.env3.*
+log.txt
+docs_build/
+site_build/
+docs.zip
+archive.zip
